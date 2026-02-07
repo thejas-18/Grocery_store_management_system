@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invoice</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container mt-4">
+    <h2>Invoice</h2>
+    <div id="billArea">Loading bill...</div>
+    <button onclick="window.print()" class="btn btn-primary mt-3">Print Bill</button>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    let billData = localStorage.getItem("billData");
+
+    if (!billData) {
+        document.getElementById("billArea").innerHTML =
+            "<h4 style='color:red'>No bill data found. Please go back and click View Bill again.</h4>";
+        return;
+    }
+
+    let bill = JSON.parse(billData);
+
+    let html = `<p><b>Customer:</b> ${bill[0].customer_name}</p>`;
+    html += `<p><b>Date:</b> ${bill[0].datetime}</p>`;
+
+    html += `<table class="table table-bordered mt-3">
+        <tr>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Unit Price</th>
+            <th>Total</th>
+        </tr>`;
+
+    let grandTotal = 0;
+
+    bill.forEach(item => {
+        grandTotal += item.total_price;
+
+        html += `<tr>
+            <td>${item.product_name}</td>
+            <td>${item.quantity}</td>
+            <td>${item.price_per_unit}</td>
+            <td>${item.total_price}</td>
+        </tr>`;
+    });
+
+    html += `</table>
+        <p><b>Note:</b> Prices are inclusive of GST</p>
+        <h4>Final Amount: Rs ${grandTotal.toFixed(2)}</h4>`;
+
+    document.getElementById("billArea").innerHTML = html;
+});
+</script>
+
+</body>
+</html>
